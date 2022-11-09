@@ -1,41 +1,39 @@
 import './App.css';
+import { useState } from 'react';
+import Home from './components/home';
+import Chat from './components/chat';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import io from 'socket.io-client';
+
+const socket = io.connect('http://localhost:8080');
 
 function App() {
-  const socket = io('http://localhost:3000');
+  const [username, setUsername] = useState('');
+  const [room, setRoom] = useState('');
+
   return (
-   
-    <div className="App">
-     
-
-      <div className="user-container">
-        <h1>Users</h1>
-        <ul id="users"></ul>
+    <Router>
+      <div className='App'>
+        <Routes>
+          <Route
+            path='/'
+            element={
+              <Home
+                username={username}
+                setUsername={setUsername}
+                room={room}
+                setRoom={setRoom}
+                socket={socket}
+              />
+            }
+          />
+          <Route
+            path='/chat'
+            element={<Chat username={username} room={room} socket={socket} />}
+          />
+        </Routes>
       </div>
-
-
-      <header className="App-header">
-        <h1>Chat App</h1>
-        <button onClick={() => socket.emit('new-user', 'John')}>New User</button>
-      </header>
-      
-
-      <div className="container">
-        <div className="message-container">
-          <div className="message">
-            <p className="meta">User <span>10:12</span></p>
-            <p className="text">
-              A message
-            </p>
-          </div>
-        </div>
-        <div className="form-container">
-          <input type="text" name="message" id="message" />
-          <button type="submit">Submit</button>
-        </div>
-      </div>
-       
-    </div>
-    
+    </Router>
   );
 }
 
